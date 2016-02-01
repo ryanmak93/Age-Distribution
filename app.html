@@ -1,0 +1,655 @@
+﻿<!DOCTYPE html>
+
+
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Application</title>
+		<link rel="stylesheet" href="main.css">
+	</head>
+	
+	<body onload="drawAll()">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.js" charset="utf-8"></script>
+		<script>
+			var selectedEvent = 0; //index of the selected event
+			var isinterval = false; //the interval checkbox status
+			var isevent = false;    //the event checkbox status
+
+            //the names of the 3 selected states or countries
+			var state1 = "United States";
+			var state2 = "Alabama";
+			var state3 = "Alaska";
+
+            //maximum population of each of the selecttions
+			var pop1 = 0;
+			var pop2 = 0;
+			var pop3 = 0;
+			var eventyear = 2015; //year of the selected event
+			var percent = [0, 0, 0];
+
+            
+			var max_age = 0;// used to determine the domain of the x axis
+			var max_pop = 0;// the max population among the 3 states or countries, used to determine domain of the y axis.
+			var file = "usdata.csv"; //name of the file
+			var age_groups = 0; // number of age groups for intervals
+
+
+            //each bar and pie graph is a separate form
+		</script>
+        
+		<form id="bargraph1"> </form>  
+        <form id="bargraph2"> </form>  
+        <form id="bargraph3"> </form>  
+        <br />   
+        <form id="piegraph1"> </form>      
+        <form id="piegraph2"> </form>     
+        <form id="piegraph3"> </form>   
+        <br />     
+        
+	   <form id="statemenu"> <!--the three drop down menus for states and countries-->
+           		<select id="state1" onchange="changeState(1)">  
+                <option value="United States">United States</option> 				    
+				<option value="Alabama">Alabama</option>
+				<option value="Alaska">Alaska</option>
+				<option value="Arizona">Arizona</option>
+				<option value="Arkansas">Arkansas</option>
+				<option value="California">California</option>
+				<option value="Colorado">Colorado</option>
+				<option value="Connecticut">Connecticut</option>
+				<option value="Delaware">Delaware</option>
+				<option value="District of Columbia">District of Columbia</option>
+				<option value="Florida">Florida</option>
+				<option value="Georgia">Georgia</option>
+				<option value="Hawaii">Hawaii</option>
+				<option value="Idaho">Idaho</option>
+				<option value="Illinois">Illinois</option>
+				<option value="Indiana">Indiana</option>
+				<option value="Iowa">Iowa</option>
+				<option value="Kansas">Kansas</option>
+				<option value="Kentucky">Kentucky</option>
+				<option value="Louisiana">Louisiana</option>
+				<option value="Maine">Maine</option>
+				<option value="Maryland">Maryland</option>
+				<option value="Massachusetts">Massachusetts</option>
+				<option value="Michigan">Michigan</option>
+				<option value="Minnesota">Minnesota</option>
+				<option value="Mississippi">Mississippi</option>
+				<option value="Missouri">Missouri</option>
+				<option value="Montana">Montana</option>
+				<option value="Nebraska">Nebraska</option>
+				<option value="Nevada">Nevada</option>
+				<option value="New Hampshire">New Hampshire</option>
+				<option value="New Jersey">New Jersey</option>
+				<option value="New Mexico">New Mexico</option>
+				<option value="New York">New York</option>
+				<option value="North Carolina">North Carolina</option>
+				<option value="North Dakota">North Dakota</option>
+				<option value="Ohio">Ohio</option>
+				<option value="Oklahoma">Oklahoma</option>
+				<option value="Oregon">Oregon</option>
+				<option value="Pennsylvania">Pennsylvania</option>
+				<option value="Rhode Island">Rhode Island</option>
+				<option value="South Carolina">South Carolina</option>
+				<option value="South Dakota">South Dakota</option>
+				<option value="Tennessee">Tennessee</option>
+				<option value="Texas">Texas</option>
+				<option value="Utah">Utah</option>
+				<option value="Vermont">Vermont</option>
+				<option value="Virginia">Virginia</option>
+				<option value="Washington">Washington</option>
+				<option value="West Virginia">West Virginia</option>
+				<option value="Wisconsin">Wisconsin</option>
+				<option value="Wyoming">Wyoming</option>
+                <option value="China">China</option>
+                <option value="Japan">Japan</option>
+                <option value="Korea,South">South Korea</option>
+                <option value="Canada">Canada</option>
+                <option value="Mexico">Mexico</option>
+			</select>&nbsp;
+           <select id="state2" onchange="changeState(2)">  
+                <option value="United States">United States</option> 				    
+				<option value="Alabama" selected="selected">Alabama</option>
+				<option value="Alaska">Alaska</option>
+				<option value="Arizona">Arizona</option>
+				<option value="Arkansas">Arkansas</option>
+				<option value="California">California</option>
+				<option value="Colorado">Colorado</option>
+				<option value="Connecticut">Connecticut</option>
+				<option value="Delaware">Delaware</option>
+				<option value="District of Columbia">District of Columbia</option>
+				<option value="Florida">Florida</option>
+				<option value="Georgia">Georgia</option>
+				<option value="Hawaii">Hawaii</option>
+				<option value="Idaho">Idaho</option>
+				<option value="Illinois">Illinois</option>
+				<option value="Indiana">Indiana</option>
+				<option value="Iowa">Iowa</option>
+				<option value="Kansas">Kansas</option>
+				<option value="Kentucky">Kentucky</option>
+				<option value="Louisiana">Louisiana</option>
+				<option value="Maine">Maine</option>
+				<option value="Maryland">Maryland</option>
+				<option value="Massachusetts">Massachusetts</option>
+				<option value="Michigan">Michigan</option>
+				<option value="Minnesota">Minnesota</option>
+				<option value="Mississippi">Mississippi</option>
+				<option value="Missouri">Missouri</option>
+				<option value="Montana">Montana</option>
+				<option value="Nebraska">Nebraska</option>
+				<option value="Nevada">Nevada</option>
+				<option value="New Hampshire">New Hampshire</option>
+				<option value="New Jersey">New Jersey</option>
+				<option value="New Mexico">New Mexico</option>
+				<option value="New York">New York</option>
+				<option value="North Carolina">North Carolina</option>
+				<option value="North Dakota">North Dakota</option>
+				<option value="Ohio">Ohio</option>
+				<option value="Oklahoma">Oklahoma</option>
+				<option value="Oregon">Oregon</option>
+				<option value="Pennsylvania">Pennsylvania</option>
+				<option value="Rhode Island">Rhode Island</option>
+				<option value="South Carolina">South Carolina</option>
+				<option value="South Dakota">South Dakota</option>
+				<option value="Tennessee">Tennessee</option>
+				<option value="Texas">Texas</option>
+				<option value="Utah">Utah</option>
+				<option value="Vermont">Vermont</option>
+				<option value="Virginia">Virginia</option>
+				<option value="Washington">Washington</option>
+				<option value="West Virginia">West Virginia</option>
+				<option value="Wisconsin">Wisconsin</option>
+				<option value="Wyoming">Wyoming</option>
+                <option value="China">China</option>
+                <option value="Japan">Japan</option>
+                <option value="Korea,South">South Korea</option>
+                <option value="Canada">Canada</option>
+                <option value="Mexico">Mexico</option>
+			</select>&nbsp;
+           <select id="state3" onchange="changeState(3)">  
+                <option value="United States">United States</option> 				    
+				<option value="Alabama">Alabama</option>
+				<option value="Alaska" selected="selected">Alaska</option>
+				<option value="Arizona">Arizona</option>
+				<option value="Arkansas">Arkansas</option>
+				<option value="California">California</option>
+				<option value="Colorado">Colorado</option>
+				<option value="Connecticut">Connecticut</option>
+				<option value="Delaware">Delaware</option>
+				<option value="District of Columbia">District of Columbia</option>
+				<option value="Florida">Florida</option>
+				<option value="Georgia">Georgia</option>
+				<option value="Hawaii">Hawaii</option>
+				<option value="Idaho">Idaho</option>
+				<option value="Illinois">Illinois</option>
+				<option value="Indiana">Indiana</option>
+				<option value="Iowa">Iowa</option>
+				<option value="Kansas">Kansas</option>
+				<option value="Kentucky">Kentucky</option>
+				<option value="Louisiana">Louisiana</option>
+				<option value="Maine">Maine</option>
+				<option value="Maryland">Maryland</option>
+				<option value="Massachusetts">Massachusetts</option>
+				<option value="Michigan">Michigan</option>
+				<option value="Minnesota">Minnesota</option>
+				<option value="Mississippi">Mississippi</option>
+				<option value="Missouri">Missouri</option>
+				<option value="Montana">Montana</option>
+				<option value="Nebraska">Nebraska</option>
+				<option value="Nevada">Nevada</option>
+				<option value="New Hampshire">New Hampshire</option>
+				<option value="New Jersey">New Jersey</option>
+				<option value="New Mexico">New Mexico</option>
+				<option value="New York">New York</option>
+				<option value="North Carolina">North Carolina</option>
+				<option value="North Dakota">North Dakota</option>
+				<option value="Ohio">Ohio</option>
+				<option value="Oklahoma">Oklahoma</option>
+				<option value="Oregon">Oregon</option>
+				<option value="Pennsylvania">Pennsylvania</option>
+				<option value="Rhode Island">Rhode Island</option>
+				<option value="South Carolina">South Carolina</option>
+				<option value="South Dakota">South Dakota</option>
+				<option value="Tennessee">Tennessee</option>
+				<option value="Texas">Texas</option>
+				<option value="Utah">Utah</option>
+				<option value="Vermont">Vermont</option>
+				<option value="Virginia">Virginia</option>
+				<option value="Washington">Washington</option>
+				<option value="West Virginia">West Virginia</option>
+				<option value="Wisconsin">Wisconsin</option>
+				<option value="Wyoming">Wyoming</option>
+                <option value="China">China</option>
+                <option value="Japan">Japan</option>
+                <option value="Korea,South">South Korea</option>
+                <option value="Canada">Canada</option>
+                <option value="Mexico">Mexico</option>
+			</select><br />
+
+
+		<input type="checkbox" id="intervalbox" onclick="toggleInterval()" style="font-size:20px;">Intervals of 10 years<br>
+		<input type="checkbox" id="eventbox" onclick="toggleEvent()" style="font-size:20px;">Event<br>
+		<script>
+		    function drawAll()
+		    {
+		        drawBarGraph(1);
+		        drawBarGraph(2);
+		        drawBarGraph(3);
+
+		    }
+			function changeState(num)
+			{
+			    state1 = document.getElementById("state1").value;
+			    state2 = document.getElementById("state2").value;
+			    state3 = document.getElementById("state3").value;
+			    drawBarGraph(num);
+
+			}
+			function changeEvent()
+			{
+				selectedEvent = document.getElementById("event").selectedIndex;
+				eventyear = document.getElementById("event").value;
+				drawAll();
+				
+			}
+
+			function toggleInterval()
+			{
+			    isinterval = document.getElementById("intervalbox").checked;
+			    drawAll();
+				
+			}
+
+			function toggleEvent()
+			{
+			    isevent = document.getElementById("eventbox").checked;
+			    changeEvent();
+				
+			}
+
+			function filterData(data, graphnum)
+			{
+			    data.forEach(function (d) {// changes all strings to integers
+			        d.state = +d.state;
+			        d.pop = +d.pop;
+			        d.age = +d.age;
+			        d.sex = +d.sex;
+			    });
+                //get the name of the current selection
+			    var currentState;
+			    if (graphnum == 1)
+			        currentState = state1;
+			    if (graphnum == 2)
+			        currentState = state2;
+			    if (graphnum == 3)
+			        currentState = state3;
+
+			        //select only total of both sexes, exclude total of all ages
+			        data = data.filter(function (row) {
+			            return row["age"] != 999 && row["sex"] == 0 && row["name"] == currentState;
+			        });
+
+			        max_age = d3.max(data, function (d) { return d.age; });
+
+
+			    age_groups = Math.ceil(max_age / 10) ;
+
+			    //calculation of the new max population based on the selections. updates the y axes if 
+			    //the new max is different from the old max.
+			    if (graphnum == 1) {
+			        pop1 = d3.max(data, function (d) { return d.pop; });
+
+			    }
+
+			    else if (graphnum == 2) {
+			        pop2 = d3.max(data, function (d) { return d.pop; });
+			    }
+
+			    else {
+			        pop3 = d3.max(data, function (d) { return d.pop; });
+			    }
+
+			    if (isevent)
+			        getPercent(data, graphnum);
+
+			    if (isinterval)
+			    {
+
+			        data.forEach(function (d) {
+
+			            d.age = 10*Math.floor(d.age / 10);
+
+			        });
+                    //rolls up the age groups into intervals of 10 i.e. 10-19, 21-29, etc
+			        data = d3.nest()
+                        .key(function (d) { return d.age; })
+                        .rollup(function (p) { return d3.sum(p, function (d) { return d.pop; }); })
+			            .entries(data);
+
+			        data.forEach(function (d) {
+			            d.pop = d.values;
+			            d.age = d.key;
+			            d.age = d.age + "-" + (+d.age + 9); 
+			        });
+
+			    }
+			    //calculation of the new max population based on the selections. updates the y axes if 
+                //the new max is different from the old max.
+			    if (graphnum == 1)
+			    {
+			        pop1 = d3.max(data, function (d) { return d.pop; });
+
+			    }
+			        
+			    else if (graphnum == 2)
+			    {
+			        pop2 = d3.max(data, function (d) { return d.pop; });
+			    }
+			        
+			    else
+			    {
+			        pop3 = d3.max(data, function (d) { return d.pop; });
+			    }
+
+
+			    var newMax = Math.max(pop1, pop2, pop3);
+			    if (newMax != max_pop)
+			    {
+			        max_pop = newMax;
+			        var i;
+			        for (i = 1; i < 4; i++) {
+			            if (i != graphnum)
+			                drawBarGraph(i);
+			        }
+			    }
+
+			    return data;
+			}
+			
+			//BAR GRAPH
+			function drawBarGraph(graphnum)
+			{
+                //remove the old graph and append a new one
+			    var test = document.getElementById("graph"+graphnum);
+
+
+			    if (test != undefined)
+			        document.getElementById("bargraph" + graphnum).removeChild(test);
+
+			    var margin = { top: 80, right: 40, bottom: 80, left: 50 },
+                width = 480 - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom;
+
+			    // An SVG element with a bottom-right origin.
+			    var svg = d3.select("#bargraph"+graphnum).append("svg")
+                    .attr("id", "graph" + graphnum)
+                .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                   
+
+			    d3.csv(file, function (error, csv_data)
+			    {
+			        
+			        var data = filterData(csv_data, graphnum);
+                        
+			        var barwidth;
+			            
+			        if (isinterval) {
+			            barWidth = Math.floor(width / 10) - 1;
+			        }
+			        else
+			            barWidth = Math.floor(width / max_age) - 1;
+
+
+			        var x = d3.scale.linear().range([0, width - barWidth / 2]);
+
+			            
+
+			        var y = d3.scale.linear()
+                        .range([height, 0]);
+
+			        var xAxis;
+
+			        if (isinterval)
+			        {
+			            xAxis = d3.svg.axis()
+                        .scale(x)
+                        .orient("bottom")
+                        .tickFormat(function (d) { return d + "-" + (d + 9) }) //formats the y axis into intervals 
+			        }
+			        else
+			        {
+			            xAxis = d3.svg.axis()
+                        .scale(x)
+                        .orient("bottom")
+			        }
+
+			        var yAxis;
+
+                    //if the max population is more than a few million, the format of the y axis will be 1M for 1 million
+			        if (max_pop < 2000000)
+			        {
+
+			            yAxis = d3.svg.axis()
+                       .scale(y)
+                       .orient("left")
+                       .tickSize(width)
+                       .tickFormat(function (d) { return d; })
+                       .ticks(8);
+			        }
+			        else
+			        {
+			            yAxis = d3.svg.axis()
+                        .scale(y)
+                        .orient("left")
+                        .tickSize(width)
+                        .tickFormat(function (d) { return Math.round(d / 1e6) + "M"; })
+                        .ticks(8);
+			        }
+			            
+
+			        // Update the scale domains.
+			        x.domain([0, max_age]);
+			        y.domain([0, max_pop]);
+
+			        //state title
+			        svg.append("text")
+                        .attr("x", width / 2)
+                        .attr("y", 40 - margin.top)
+                        .attr("text-anchor", "middle")
+                        .style("font-size", "25px")
+                        .text(function (d) 
+                        {
+                            var title;
+                            if (graphnum == 1)
+                                title = state1 ;
+                            else if (graphnum == 2)
+                                title = state2;
+                            else
+                                title = state3;
+
+                            if (isevent)
+                                return title + "(" + percent[graphnum - 1] + "%" + ")";
+                            else
+                                return title;
+
+
+                       });
+
+			        // Add an axis to show the population values.
+			        svg.append("g")
+                        .attr("class", "x axis")
+                        .attr("transform", "translate(0," + height + ")")
+                        .call(xAxis)
+                        .append("text")
+                        .text("Age")
+                        .attr("x", 190)
+                        .attr("y", 30)
+                        .style("font-size", "13px")
+                        .style("text-anchor", "middle")
+
+			        svg.append("g")
+                        .attr("class", "y axis")
+                        .attr("transform", "translate(" + width + ",0)")
+                        .call(yAxis)
+                        .append("text")
+                        .attr("y", -10)
+                        .attr("x", -width - 25)
+                        .style("font-size", "13px")
+                        .style("text-anchor", "start")
+                        .text("Population");
+
+			        if (isinterval)
+			        {
+			            svg.selectAll("bar")
+                        .data(data)
+                        .enter().append("rect")
+                        .style("fill", function (d)
+                        {
+                            var yearat12 = 2015 - d.key + 5;
+                            if (isevent && (yearat12 <= eventyear))
+                            {
+
+                                return "red";
+                            }
+                            else
+                                return "steelblue";
+                        })
+                        .attr("x", function (d) { return x(d.key); })
+                        .attr("width", width / age_groups)
+                        .attr("y", function (d) { return y(d.pop); })
+                        .attr("height", function (d) { return height - y(d.pop); });
+			        }
+			        else
+			        {
+			            svg.selectAll("bar")
+                        .data(data)
+                        .enter().append("rect")
+                        .style("fill", function (d) 
+                        {
+                            if (isevent && d.age -(2015 - eventyear) >= 12) 
+                            {
+                                return "red";
+                            }
+                            return "steelblue";
+                                
+                        })
+                        .attr("x", function (d) { return x(d.age); })
+                        .attr("width",  width / max_age)
+                        .attr("y", function (d) { return y(d.pop); })
+                        .attr("height", function (d) { return height - y(d.pop); });
+			        }
+			            
+
+			    });
+			    drawPieGraph(graphnum); //a pie graph will be drawn whenever a bar graph is drawn
+			}
+
+            //pie graph
+			function drawPieGraph(graphnum) 
+			{
+			    var pietest = document.getElementById("pie" + graphnum);
+
+			    if (pietest != undefined)
+			        document.getElementById("piegraph" + graphnum).removeChild(pietest);
+
+			    var margin = { top: 20, right: 20, bottom: 20, left: 0 },
+                width = 480 - margin.left - margin.right,
+                height = 400 - margin.top - margin.bottom,
+                    radius = Math.min(width, height) / 2;
+						
+			    var color = d3.scale.category10();
+			    var svg = d3.select("#piegraph"+graphnum).append("svg")
+                    .attr("id", "pie" + graphnum)
+                    .attr("width", width + margin.left + margin.right)
+                    .attr("height", height + margin.top + margin.bottom)
+                    .append("g")
+                    .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
+
+			    var pie = d3.layout.pie()
+                    .value(function (d) { return d.pop; })
+                    .sort(null);
+
+
+			    var arc = d3.svg.arc()
+                    .innerRadius(0)
+                    .outerRadius(radius);
+
+			        
+			    d3.csv(file, function (error, csv_data)
+			    {
+			            
+			        //strings to ints
+			        var data = filterData(csv_data, graphnum);
+			                    
+
+			        var g = svg.selectAll(".arc")
+                                .data(pie(data))
+                                .enter().append("g")
+                                .attr("class", "arc");
+            
+			        g.append("path")
+                        .attr("d", arc)
+                        .style("fill", function (d) 
+                        {
+                            var yearat12 = 2015 - d.data.key + 5;
+                            if (isevent && (!isinterval) && (( d.data.age -(2015 - eventyear) >= 12) || d.data.key > 1 ))
+                            {
+                                return "red";
+                            }
+                            else if (isevent && isinterval && (yearat12 <= eventyear))
+                            {
+                                return "red";
+                            }
+                            return color(d.data.age);
+                        });
+                
+			        g.append("text")
+                        .attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")"; })
+                        .attr("dy", ".35em")
+                        .style("text-anchor", "middle")
+                        .text(function (d) { return d.data.age; });       							
+			    })
+			}
+
+			function getPercent(data, graphnum)
+			{
+			    var totalpop = 0;
+			    percent[graphnum-1] = 0;
+			    data.forEach(function (d) {
+			        totalpop += d.pop;
+			        if (d.age - (2015 - eventyear) >= 12)
+			        percent[graphnum - 1] += d.pop;
+			    });
+			    console.log(percent[graphnum - 1]);
+			    percent[graphnum-1] = ((percent[graphnum-1] / totalpop )*100).toFixed(2);
+			    
+			}
+            //events dropmenu
+		</script><select id="event" onchange="changeEvent()">    
+                <option value="1942">Release of "Bambi (1942)"</option>  
+                <option value="1945">End of WWII (1945)</option>       
+                <option value="1957">First birth control pill (1957)</option>                  
+				<option value="1969">Armstrong is the first man on the moon (1969)</option>   
+                <option value="1973">First cellphone (1973)</option>  
+                <option value="1978">Dolly the sheep cloned (1978)</option>    
+				<option value="1985">First Microsoft computer (1985)</option>		
+        		<option value="1991">World Wide Web released to the public (1991)</option>  				
+                <option value="1996">Nintendo 64 released (1996)</option>   
+                <option value="2001">9/11 (2001)</option>                   
+		</select></form>	
+	
+
+	<table>
+		<tr>
+            <td><a href="index.html"> Home </a></td>
+            <td><a href="setup.html"> How to Set Up App </a></td>
+			<td>Application</td>	
+			<td><a href="data.html"> About the Data </a></td>
+            <td><a href="facts.html"> Interesting Facts </a></td>
+	   </tr>
+	</table>
+	</body>
+</html>
